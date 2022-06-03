@@ -125,11 +125,11 @@ future&lt;int&gt; f = async([b](){return b-&gt;foo()});          </pre><p>
             queue and drinks. A Customer comes. Then another, who waits until the first customer is
             served.</p><p><span class="inlinemediaobject"><img src="libs/asynchronous/doc/pics/Proactor2.jpg"></span></p><p>To keep customers happy by reducing waiting time, the restaurant owner hires a second
             employee:</p><p><span class="inlinemediaobject"><img src="libs/asynchronous/doc/pics/Proactor3.jpg"></span></p><p>Unfortunately, this brings chaos in the restaurant. Sometimes, employes fight to get a
-            burger to their own customer first:</p><p><span class="inlinemediaobject"><img src="libs/asynchronous/doc/pics/Proactor-RC.jpg"></span></p><p>And sometimes, they stay in each other's way:</p><p><span class="inlinemediaobject"><img src="libs/asynchronous/doc/pics/Proactor-DL.jpg"></span></p><p>This clearly is a not an optimal solution. Not only the additional employee brings
+            burger to their own customer first:</p><p><span class="inlinemediaobject"><img src="libs/asynchronous/doc/pics/Proactor-RC.jpg"></span></p><p>And sometimes, they stay in each other's way:</p><p><span class="inlinemediaobject"><img src="libs/asynchronous/doc/pics/Proactor-DL.jpg"></span></p><p>This clearly is a not an optimal solution. Not only does the additional employee bring
             additional costs, but both employees now spend much more time waiting. It also is not a
             scalable solution if even more customers want to eat because it's lunch-time right now.
             Even worse, as they fight for resources and stay in each other's way, the restaurant now
-            serves people less fast than before. Customers flee and the restaurant gets bankrupt. A
+            serves people less fast than before. Customers flee and the restaurant goes bankrupt. A
             sad story, isn't it? To avoid this, the owner decides to go asynchronous. He keeps a
             single worker, who runs in zero time from cash desk to cash desk:</p><p><span class="inlinemediaobject"><img src="libs/asynchronous/doc/pics/Proactor-async.jpg"></span></p><p>The worker never waits because it would increase customer's waiting time. Instead, he
             runs from cash desks to the burger queue, beverage machine using a self-made strategy: </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>ask what the customer wants and keep an up-to-date information of the
