@@ -424,10 +424,10 @@ int res = fui.get();
                             new boost::asynchronous::threadpool_scheduler&lt;
                                 boost::asynchronous::lockfree_queue&lt;&gt; &gt;(3));
 // post a simple task and wait for execution to complete
-std::future&lt;void&gt; fuv = boost::asynchronous::post_future(scheduler, [](){std::cout &lt;&lt; "void lambda" &lt;&lt; std::endl;});
+std::future&lt;void&gt; fuv = boost::asynchronous::post_future(scheduler, \[\](){std::cout &lt;&lt; "void lambda" &lt;&lt; std::endl;});
 fuv.get();
 // post a simple task and wait for result
-std::future&lt;int&gt; fui = boost::asynchronous::post_future(scheduler, [](){std::cout &lt;&lt; "int lambda" &lt;&lt; std::endl;return 42;});
+std::future&lt;int&gt; fui = boost::asynchronous::post_future(scheduler, \[\](){std::cout &lt;&lt; "int lambda" &lt;&lt; std::endl;return 42;});
 int res = fui.get();   </pre><p>boost::asynchronous::post_future posts a piece of work to a threadpool
                     scheduler with 3 threads and using a lockfree_queue. We get a std::future&lt;the
                     type of the task return type&gt;.</p><p>This looks like much std::async, but we're just getting started. Let's move on
@@ -489,7 +489,7 @@ std::cout&lt;&lt; "something:" &lt;&lt; something &lt;&lt; std::endl; // somethi
                     proxy goes out of scope, the servant destructor is posted. When the scheduler
                     goes out of scope, its thread is stopped and joined. The queue is processed
                     completely first. Of course, as many servants as desired can be created in this
-                    scheduler context. Please have a look at <a class="link" href="libs/asynchronous/doc/libs/asynchronous/doc/examples/example_simple_servant.cpp" target="_top">the complete
+                    scheduler context. Please have a look at <a class="link" href="libs/asynchronous/doc/examples/example_simple_servant.cpp" target="_top">the complete
                     example</a>.</p></div><div class="sect1" title="Using a threadpool from within a servant"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e597"></a>Using a threadpool from within a servant</h2></div></div></div><p>If you remember the principles of Asynchronous, blocking a single-thread
                     scheduler is taboo as it blocks the thread doing all the management of a system.
                     But what to do when one needs to execute long tasks? Asynchronous provides a
