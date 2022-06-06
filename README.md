@@ -230,7 +230,7 @@ string s= f2.get();</pre><p>
                     some type erasure mechanism. We still have a logical one as B keeps its owner,
                     A, alive. Then, we can use a weak_ptr so that B does not keep A alive. But when
                     we lock, we do keep A alive. It's for a short time, but what if A is shutting
-                    down? It's lost, our layered design is broken.</p><p>Asynchronous is more that a library providing a better std::async or some
+                    down? It's lost, our layered design is broken.</p><p>Asynchronous is more than a library providing a better std::async or some
                     parallel algorithms, it's first of all an architectural tool. In the above case,
                     we will decide that every layer will live in its own thread(s), called
                     schedulers in Asynchronous language. Deciding in which thread an object "lives"
@@ -1907,7 +1907,7 @@ auto scheduler = boost::asynchronous::create_shared_scheduler_proxy(
                         to a server. What we want is a client/server combo application  where the
                         client steals and executes jobs and a server component of the same
                         application which steals jobs from the client on behalf of other clients.
-                        What we want is to achieve something like this:</p><p><span class="inlinemediaobject"><img src="pics/TCPHierarchical.jpg"></span></p><p>We have our server application, as seen until now, called interestingly
+                        What we want is to achieve something like this:</p><p><span class="inlinemediaobject"><img src="libs/asynchronous/doc/pics/TCPHierarchical.jpg"></span></p><p>We have our server application, as seen until now, called interestingly
                         ServerApplication on a machine called MainJobServer. This machine executes
                         work and offers at the same time a steal-from capability. We also have a
                         simple client called ClientApplication running on ClientMachine1, which
@@ -3397,7 +3397,7 @@ explicit vector( boost::asynchronous::any_shared_scheduler_proxy&lt;Job&gt; sche
                                 be executed in the lower layer thread(s)</p></li><li class="listitem"><p>Lifecycles. Usually, each layer has responsibility of keeping his
                                 lower layers alive. But how to handle destruction of higher-levels?
                                 Callbacks might already be under way and they will soon meet a
-                                destroyed mutex?</p></li></ul></div><p><span class="inlinemediaobject"><img src="pics/layers.jpg"></span></p><p>Asychronous provides a solution to these problems:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>Each layer is living in its own thread world (or sharing
+                                destroyed mutex?</p></li></ul></div><p><span class="inlinemediaobject"><img src="libs/asynchronous/doc/pics/layers.jpg"></span></p><p>Asychronous provides a solution to these problems:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>Each layer is living in its own thread world (or sharing
                                 one).</p></li><li class="listitem"><p>Asynchronous guarantees that each layer will be destroyed in turn:
                                 LowLevel - MiddleLevel - TopLevel.</p></li><li class="listitem"><p>Asynchronous provides proxies to serialize outside calls into a
                                 servant thread world.</p></li><li class="listitem"><p>Asynchronous provides safe callbacks: each servant can use
