@@ -120,25 +120,25 @@ future&lt;int&gt; f = async([b](){return b-&gt;foo()});          </pre><p>
             we wait too long before handling an error or result, or we wait not enough and we poll.
             In any case, while waiting, our thread cannot react to other events and wastes
             time.</p><p>An image being more worth than thousand words, the following story will explain in a
-            few minutes what Asynchronous is about. Consider some fast-food restaurant:</p><p><span class="inlinemediaobject"><img src="pics/Proactor1.jpg"></span>
+            few minutes what Asynchronous is about. Consider some fast-food restaurant:</p><p><span class="inlinemediaobject"><img src="libs/asynchronous/doc/pics/Proactor1.jpg"></span>
         </p><p>This restaurant has a single employee, Worker, who delivers burgers through a burger
             queue and drinks. A Customer comes. Then another, who waits until the first customer is
-            served.</p><p><span class="inlinemediaobject"><img src="pics/Proactor2.jpg"></span></p><p>To keep customers happy by reducing waiting time, the restaurant owner hires a second
-            employee:</p><p><span class="inlinemediaobject"><img src="pics/Proactor3.jpg"></span></p><p>Unfortunately, this brings chaos in the restaurant. Sometimes, employes fight to get a
-            burger to their own customer first:</p><p><span class="inlinemediaobject"><img src="pics/Proactor-RC.jpg"></span></p><p>And sometimes, they stay in each other's way:</p><p><span class="inlinemediaobject"><img src="pics/Proactor-DL.jpg"></span></p><p>This clearly is a not an optimal solution. Not only the additional employee brings
+            served.</p><p><span class="inlinemediaobject"><img src="libs/asynchronous/doc/pics/Proactor2.jpg"></span></p><p>To keep customers happy by reducing waiting time, the restaurant owner hires a second
+            employee:</p><p><span class="inlinemediaobject"><img src="libs/asynchronous/doc/pics/Proactor3.jpg"></span></p><p>Unfortunately, this brings chaos in the restaurant. Sometimes, employes fight to get a
+            burger to their own customer first:</p><p><span class="inlinemediaobject"><img src="libs/asynchronous/doc/pics/Proactor-RC.jpg"></span></p><p>And sometimes, they stay in each other's way:</p><p><span class="inlinemediaobject"><img src="libs/asynchronous/doc/pics/Proactor-DL.jpg"></span></p><p>This clearly is a not an optimal solution. Not only does the additional employee bring
             additional costs, but both employees now spend much more time waiting. It also is not a
             scalable solution if even more customers want to eat because it's lunch-time right now.
             Even worse, as they fight for resources and stay in each other's way, the restaurant now
-            serves people less fast than before. Customers flee and the restaurant gets bankrupt. A
+            serves people less fast than before. Customers flee and the restaurant goes bankrupt. A
             sad story, isn't it? To avoid this, the owner decides to go asynchronous. He keeps a
-            single worker, who runs in zero time from cash desk to cash desk:</p><p><span class="inlinemediaobject"><img src="pics/Proactor-async.jpg"></span></p><p>The worker never waits because it would increase customer's waiting time. Instead, he
+            single worker, who runs in zero time from cash desk to cash desk:</p><p><span class="inlinemediaobject"><img src="libs/asynchronous/doc/pics/Proactor-async.jpg"></span></p><p>The worker never waits because it would increase customer's waiting time. Instead, he
             runs from cash desks to the burger queue, beverage machine using a self-made strategy: </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>ask what the customer wants and keep an up-to-date information of the
                         customer's state.</p></li><li class="listitem"><p>if we have another customer at a desk, ask what he wants. For both
                         customers, remember the state of the order (waiting for customer choice,
                         getting food, getting drink, delivering, getting payment, etc.)</p></li><li class="listitem"><p>as soon as some new state is detected (customer choice, burger in the
                         queue, drink ready), handle it.</p></li><li class="listitem"><p>priorities are defined: start the longest-lasting tasks first, serve
                         angry-looking customers first, etc.</p></li></ul></div><p>The following diagram shows us the busy and really really fast worker in
-            action:</p><p><span class="inlinemediaobject"><img src="pics/Proactor-async2.jpg"></span></p><p>Of course the owner needs a worker who runs fast, and has a pretty good memory so he
+            action:</p><p><span class="inlinemediaobject"><img src="libs/asynchronous/doc/pics/Proactor-async2.jpg"></span></p><p>Of course the owner needs a worker who runs fast, and has a pretty good memory so he
             can remember what customers are waiting for. </p><p>This is what Asynchronous is for. A worker (thread) runs as long as there are waiting
             customers, following a precisely defined algorithm, and lots of state machines to manage
             the asynchronous behaviour. In case of customers, we could have a state machine: Waiting
@@ -189,7 +189,7 @@ string s= f2.get();</pre><p>
                                 lines program built that way?</p></li></ul></div><p>And what about the suggestion of adding new keywords, async and await, as in
                     N3650? Nope. First because, as await suggests, someone will need, at some point,
                     to block waiting. Second because as we have no future, we also lose our polling
-                    option.</p></div><div class="sect1" title="Active Object"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e221"></a>Active Object</h2></div><div><h3 class="subtitle">Design</h3></div></div></div><p><span class="inlinemediaobject"><img src="pics/ActiveObject.jpg"></span></p><p>This simplified diagram shows a possible design variation of an Active Object
+                    option.</p></div><div class="sect1" title="Active Object"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e221"></a>Active Object</h2></div><div><h3 class="subtitle">Design</h3></div></div></div><p><span class="inlinemediaobject"><img src="libs/asynchronous/doc/pics/ActiveObject.jpg"></span></p><p>This simplified diagram shows a possible design variation of an Active Object
                     pattern.</p><p>A thread-unsafe Servant is hidden behind a Proxy, which offers the same
                     members as the Servant itself. This Proxy is called by clients and delivers a
                     future object, which will, at some later point, contain the result of the
@@ -200,7 +200,7 @@ string s= f2.get();</pre><p>
                     thus providing thread-safety.</p><p>However, this pattern presents some liabilities:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>Performance overhead: depending on the system, data moving and
                                 context switching can be a performance drain.</p></li><li class="listitem"><p>Memory overhead: for every Servant, a thread has to be created,
                                 consuming resources.</p></li><li class="listitem"><p>Usage: getting a future gets us back to the non-asynchronous
-                                behaviour we would like to avoid.</p></li></ul></div></div><div class="sect1" title="Proactor"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e246"></a>Proactor</h2></div><div><h3 class="subtitle">Design</h3></div></div></div><p><span class="inlinemediaobject"><img src="pics/Proactor.jpg"></span></p><p>This is the design pattern behind Boost.Asio. See: <a class="link" href="http://www.boost.org/doc/libs/1_57_0/doc/html/boost_asio/overview/core/async.html" target="_top">Boost.Asio documentation</a> for a full explanation. Boost Asynchronous
+                                behaviour we would like to avoid.</p></li></ul></div></div><div class="sect1" title="Proactor"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e246"></a>Proactor</h2></div><div><h3 class="subtitle">Design</h3></div></div></div><p><span class="inlinemediaobject"><img src="libs/asynchronous/doc/pics/Proactor.jpg"></span></p><p>This is the design pattern behind Boost.Asio. See: <a class="link" href="http://www.boost.org/doc/libs/1_57_0/doc/html/boost_asio/overview/core/async.html" target="_top">Boost.Asio documentation</a> for a full explanation. Boost Asynchronous
                     is very similar. It supports enqueueing asynchronous operations and waiting for
                     callbacks, offering extensions: safe callbacks, threadpools, proxies,
                     etc.</p></div></div><div class="chapter" title="Chapter&nbsp;2.&nbsp;Features of Boost.Asynchronous"><div class="titlepage"><div><div><h2 class="title"><a name="d0e260"></a>Chapter&nbsp;2.&nbsp;Features of Boost.Asynchronous</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="#d0e263">Thread world</a></span></dt><dt><span class="sect1"><a href="#d0e274">Better Architecture</a></span></dt><dt><span class="sect1"><a href="#d0e284">Shutting down</a></span></dt><dt><span class="sect1"><a href="#d0e291">Object lifetime</a></span></dt><dt><span class="sect1"><a href="#d0e314">Servant Proxies</a></span></dt><dt><span class="sect1"><a href="#d0e322">Interrupting</a></span></dt><dt><span class="sect1"><a href="#d0e337">Diagnostics</a></span></dt><dt><span class="sect1"><a href="#d0e349">Continuations</a></span></dt><dt><span class="sect1"><a href="#d0e365">Want more power? What about extra machines?</a></span></dt><dt><span class="sect1"><a href="#d0e377">Parallel algorithms</a></span></dt><dt><span class="sect1"><a href="#d0e413">Task Priority</a></span></dt><dt><span class="sect1"><a href="#d0e420">Integrating with Boost.Asio</a></span></dt><dt><span class="sect1"><a href="#d0e430">Integrating with Qt</a></span></dt><dt><span class="sect1"><a href="#d0e435">Work Stealing</a></span></dt><dt><span class="sect1"><a href="#d0e440">Extending the library</a></span></dt><dt><span class="sect1"><a href="#d0e458">Design Diagrams</a></span></dt></dl></div><div class="sect1" title="Thread world"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e263"></a>Thread world</h2></div><div><h3 class="subtitle">Extending Active Objects with more servants within a thread
@@ -230,12 +230,12 @@ string s= f2.get();</pre><p>
                     some type erasure mechanism. We still have a logical one as B keeps its owner,
                     A, alive. Then, we can use a weak_ptr so that B does not keep A alive. But when
                     we lock, we do keep A alive. It's for a short time, but what if A is shutting
-                    down? It's lost, our layered design is broken.</p><p>Asynchronous is more that a library providing a better std::async or some
+                    down? It's lost, our layered design is broken.</p><p>Asynchronous is more than a library providing a better std::async or some
                     parallel algorithms, it's first of all an architectural tool. In the above case,
                     we will decide that every layer will live in its own thread(s), called
                     schedulers in Asynchronous language. Deciding in which thread an object "lives"
                     is a key point of a good design. Then the top layer, A, will make a request to
-                    B, aking a future as a result, or much better, providing a callback.
+                    B, asking a future as a result, or much better, providing a callback.
                     Asynchronous offers a callback safe in two ways: thread-safe and checking the
                     lifetime of the callback target. This callback is provided by
                         <code class="code">make_safe_callback</code>. This simple tool is a major help in making
@@ -342,7 +342,7 @@ private:
                     between different threadpools. Please have a look at Asynchronous' composite
                     scheduler.</p></div><div class="sect1" title="Extending the library"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e440"></a>Extending the library</h2></div></div></div><p>Asynchronous has been written with the design goal of allowing anybody to
                     extend the library. In particular, the authors are hoping to be offered the
-                    following extensions:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>More schedulers, threadpools</p></li><li class="listitem"><p>Queues</p></li><li class="listitem"><p>Parallel algorithms</p></li><li class="listitem"><p>Integration with other libraries</p></li></ul></div></div><div class="sect1" title="Design Diagrams"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e458"></a>Design Diagrams</h2></div></div></div><p><span class="inlinemediaobject"><img src="pics/AsynchronousDesign.jpg"></span></p><p>This diagram shows an overview of the design behind Asynchronous. One or more
+                    following extensions:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>More schedulers, threadpools</p></li><li class="listitem"><p>Queues</p></li><li class="listitem"><p>Parallel algorithms</p></li><li class="listitem"><p>Integration with other libraries</p></li></ul></div></div><div class="sect1" title="Design Diagrams"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e458"></a>Design Diagrams</h2></div></div></div><p><span class="inlinemediaobject"><img src="libs/asynchronous/doc/pics/AsynchronousDesign.jpg"></span></p><p>This diagram shows an overview of the design behind Asynchronous. One or more
                     Servant objects live in a single-theaded world, communicating with the outside
                     world only through one or several queues, from which the single-threaded
                     scheduler pops tasks. Tasks are pushed by calling a member on a proxy
@@ -388,7 +388,7 @@ private:
                         handling callbacks.</p></div><div class="sect2" title="Queue"><div class="titlepage"><div><div><h3 class="title"><a name="d0e524"></a>Queue</h3></div></div></div><p>Holds jobs for a scheduler to execute. Used as communication mean between
                         Schedulers / Worlds</p></div><div class="sect2" title="Servant Proxy"><div class="titlepage"><div><div><h3 class="title"><a name="d0e529"></a>Servant Proxy</h3></div></div></div><p>A thread-safe object looking like a Servant and serializing calls to
                         it.</p></div><div class="sect2" title="Scheduler Shared Proxy"><div class="titlepage"><div><div><h3 class="title"><a name="d0e534"></a>Scheduler Shared Proxy</h3></div></div></div><p>Object holding a scheduler and interfacing with it. The last instance
-                        joins the threads of the scheduler.</p></div><div class="sect2" title="Posting"><div class="titlepage"><div><div><h3 class="title"><a name="d0e539"></a>Posting</h3></div></div></div><p>Enqueueing a job into a Scheduler's queue.</p></div></div><div class="sect1" title="Hello, asynchronous world"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e544"></a>Hello, asynchronous world</h2></div></div></div><p>The following code shows a very basic usage (a complete example <a class="link" href="examples/example_post_future.cpp" target="_top">here</a>), this is not
+                        joins the threads of the scheduler.</p></div><div class="sect2" title="Posting"><div class="titlepage"><div><div><h3 class="title"><a name="d0e539"></a>Posting</h3></div></div></div><p>Enqueueing a job into a Scheduler's queue.</p></div></div><div class="sect1" title="Hello, asynchronous world"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e544"></a>Hello, asynchronous world</h2></div></div></div><p>The following code shows a very basic usage (a complete example <a class="link" href="libs/asynchronous/doc/examples/example_post_future.cpp" target="_top">here</a>), this is not
                     really asynchronous yet:</p><pre class="programlisting">#include &lt;boost/asynchronous/scheduler/threadpool_scheduler.hpp&gt;
 #include &lt;boost/asynchronous/queue/lockfree_queue.hpp&gt;
 #include &lt;boost/asynchronous/scheduler_shared_proxy.hpp&gt;
@@ -424,10 +424,10 @@ int res = fui.get();
                             new boost::asynchronous::threadpool_scheduler&lt;
                                 boost::asynchronous::lockfree_queue&lt;&gt; &gt;(3));
 // post a simple task and wait for execution to complete
-std::future&lt;void&gt; fuv = boost::asynchronous::post_future(scheduler, [](){std::cout &lt;&lt; "void lambda" &lt;&lt; std::endl;});
+std::future&lt;void&gt; fuv = boost::asynchronous::post_future(scheduler, \[\](){std::cout &lt;&lt; "void lambda" &lt;&lt; std::endl;});
 fuv.get();
 // post a simple task and wait for result
-std::future&lt;int&gt; fui = boost::asynchronous::post_future(scheduler, [](){std::cout &lt;&lt; "int lambda" &lt;&lt; std::endl;return 42;});
+std::future&lt;int&gt; fui = boost::asynchronous::post_future(scheduler, \[\](){std::cout &lt;&lt; "int lambda" &lt;&lt; std::endl;return 42;});
 int res = fui.get();   </pre><p>boost::asynchronous::post_future posts a piece of work to a threadpool
                     scheduler with 3 threads and using a lockfree_queue. We get a std::future&lt;the
                     type of the task return type&gt;.</p><p>This looks like much std::async, but we're just getting started. Let's move on
@@ -489,7 +489,7 @@ std::cout&lt;&lt; "something:" &lt;&lt; something &lt;&lt; std::endl; // somethi
                     proxy goes out of scope, the servant destructor is posted. When the scheduler
                     goes out of scope, its thread is stopped and joined. The queue is processed
                     completely first. Of course, as many servants as desired can be created in this
-                    scheduler context. Please have a look at <a class="link" href="examples/example_simple_servant.cpp" target="_top">the complete
+                    scheduler context. Please have a look at <a class="link" href="libs/asynchronous/doc/examples/example_simple_servant.cpp" target="_top">the complete
                     example</a>.</p></div><div class="sect1" title="Using a threadpool from within a servant"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e597"></a>Using a threadpool from within a servant</h2></div></div></div><p>If you remember the principles of Asynchronous, blocking a single-thread
                     scheduler is taboo as it blocks the thread doing all the management of a system.
                     But what to do when one needs to execute long tasks? Asynchronous provides a
@@ -542,7 +542,7 @@ std::cout&lt;&lt; "something:" &lt;&lt; something &lt;&lt; std::endl; // somethi
                     Similarly, the long work will be executed by the threadpool only if Servant is
                     alive by the time it starts. Everything else stays the same, one creates a proxy
                     for the servant and posts calls to its members, so we'll skip it for
-                    conciseness, the complete example can be found <a class="link" href="examples/example_post_trackable_threadpool.cpp" target="_top">here</a>.</p></div><div class="sect1" title="A servant using another servant proxy"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e645"></a>A servant using another servant proxy</h2></div></div></div><p>Often, in a layered design, you'll need that a servant in a single-threaded
+                    conciseness, the complete example can be found <a class="link" href="libs/asynchronous/doc/examples/example_post_trackable_threadpool.cpp" target="_top">here</a>.</p></div><div class="sect1" title="A servant using another servant proxy"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e645"></a>A servant using another servant proxy</h2></div></div></div><p>Often, in a layered design, you'll need that a servant in a single-threaded
                     scheduler calls a member of a servant living in another one. And you'll want to
                     get a callback, not a future, because you absolutely refuse to block waiting for
                     a future (and you'll be very right of course!). Ideally, except for main(), you
@@ -581,7 +581,7 @@ struct Servant2 : boost::asynchronous::trackable_servant&lt;&gt;
                     All this thread-safe of course. Destruction is also safe. When
                         <code class="code">Servant2</code> goes out of scope, it will shutdown
                         <code class="code">Servant</code>'s scheduler, then will his scheduler be shutdown
-                    (provided no more object is living there), and all threads joined. The <a class="link" href="examples/example_two_simple_servants.cpp" target="_top">complete example
+                    (provided no more object is living there), and all threads joined. The <a class="link" href="libs/asynchronous/doc/examples/example_two_simple_servants.cpp" target="_top">complete example
                     </a> shows a few more calls too.</p><p>Asynchronous offers a different syntax to achieve the same result. Which one
                     you use is a matter of taste, both are equivalent. The second method is with
                     BOOST_ASYNC_MEMBER_UNSAFE_CALLBACK(_LOG if you need logging). It takes a
@@ -618,7 +618,7 @@ struct Servant2 : boost::asynchronous::trackable_servant&lt;&gt;
                     interruption points. Supposing we have well-behaved tasks, they will be
                     interrupted at the next interruption point if they started, or if they did not
                     start yet because they are waiting in a queue, then they will never start. In
-                    this <a class="link" href="examples/example_interrupt.cpp" target="_top">example</a>, we have
+                    this <a class="link" href="libs/asynchronous/doc/examples/example_interrupt.cpp" target="_top">example</a>, we have
                     very little to change but the post call. We use <code class="code">interruptible_post_callback</code>
                     instead of <code class="code">post_callback</code>. We get an <code class="code">any_interruptible object</code>, which offers a
                     single <code class="code">interrupt()</code> member.</p><pre class="programlisting">struct Servant : boost::asynchronous::trackable_servant&lt;&gt;
@@ -719,10 +719,10 @@ for (auto mit = single_thread_sched_diag.begin(); mit != single_thread_sched_dia
      }
 }              </pre><p>It goes similarly with the threapool scheduler, with the slight difference
                     that we ask the Servant to deliver diagnostic information through a proxy
-                    member. The <a class="link" href="examples/example_log.cpp" target="_top">complete example</a>
+                    member. The <a class="link" href="libs/asynchronous/doc/examples/example_log.cpp" target="_top">complete example</a>
                     shows all this, plus an interrupted job.</p></div><div class="sect1" title="Generating HTML diagnostics"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e794"></a><span class="command"><strong><a name="html_diags"></a></strong></span>Generating HTML diagnostics</h2></div></div></div><p>We just saw how to programmatically get diagnostics from schedulers. This is
                     very useful, but nobody likes to do it manually, so the authors went the extra
-                    mile and provide an HTML formatter for convenience. The <a class="link" href="examples/example_html_diagnostics.cpp" target="_top">included example</a>
+                    mile and provide an HTML formatter for convenience. The <a class="link" href="libs/asynchronous/doc/examples/example_html_diagnostics.cpp" target="_top">included example</a>
                     shows how to use it. In this example, we have a Servant, living in its own
                     single-threaded scheduler called "Servant". It uses a threadpool call
                     "Threadpool". When the Servant's foo() method is called, it executes a
@@ -731,10 +731,10 @@ for (auto mit = single_thread_sched_diag.begin(); mit != single_thread_sched_dia
                     scheduler", which will be used by the formatter code. Yes, even this scheduler
                     will be logged too. The example creates a Servant, calls foo() on the proxy,
                     sleeps for a while (how long is passed to the example as argument), then
-                    generates <a class="link" href="examples/in_progress.html" target="_top">a first output
+                    generates <a class="link" href="libs/asynchronous/doc/examples/in_progress.html" target="_top">a first output
                         statistics</a>. Depending on the sleep time, the parallel work might or
                     might not be finished, so this is an intermediate result.</p><p>We then wait for the tasks to finish, destroy the servant, so that its
-                    destructor is logged too, and we generate a <a class="link" href="examples/final.html" target="_top">final diagnostics</a>.</p><p>The HTML pages display the statistics for all schedulers, including the
+                    destructor is logged too, and we generate a <a class="link" href="libs/asynchronous/doc/examples/final.html" target="_top">final diagnostics</a>.</p><p>The HTML pages display the statistics for all schedulers, including the
                     formatter. It shows with different colors the waiting times of tasks (called
                     Scheduling time), the execution times, successful or failed separately, and the
                     added total time for each task, with max min, average duration. One can also
@@ -805,10 +805,10 @@ std::future&lt;std::future&lt;int&gt;&gt; fu = proxy.start_async_work();</pre><p
                     threadpool, the second for the priority of the callback posted back to the
                     servant scheduler. The string is the log name of the task, which we choose to
                     ignore here.</p><p>The priority is in any case an indication, the scheduler is free to ignore it
-                    if not supported. In the <a class="link" href="examples/example_queue_container.cpp" target="_top">example</a>, the single threaded scheduler will honor the request, but
+                    if not supported. In the <a class="link" href="libs/asynchronous/doc/examples/example_queue_container.cpp" target="_top">example</a>, the single threaded scheduler will honor the request, but
                     the threadpool has a normal queue and cannot honor the request, but a threadpool
                     with an <code class="code">any_queue_container</code> or a
-                        <code class="code">composite_threadpool_scheduler</code> can. The <a class="link" href="examples/example_queue_container_log.cpp" target="_top">same example</a>
+                        <code class="code">composite_threadpool_scheduler</code> can. The <a class="link" href="libs/asynchronous/doc/examples/example_queue_container_log.cpp" target="_top">same example</a>
                     can be rewritten to also support logging.</p><p><code class="code">any_queue_container</code> has two template arguments. The first, the
                     job type, is as always by default, a callable (<code class="code">any_callable</code>) job.
                     The second is the policy which Asynchronous uses to find the desired queue for a
@@ -897,7 +897,7 @@ boost::asynchronous::any_shared_scheduler_proxy&lt;&gt; tp_worker =
                         asio-based communication for helping other schedulers. Addng an asio
                         scheduler to a composite pool will allow the threads of this scheduler to
                         help (steal) other pools when no communication is currently happening. </p><p>Stealing is done with priority. A stealing pool first tries to steal from the
-                        first pool, then from the second, etc.</p><p>The <a class="link" href="examples/example_composite_threadpool.cpp" target="_top">following
+                        first pool, then from the second, etc.</p><p>The <a class="link" href="libs/asynchronous/doc/examples/example_composite_threadpool.cpp" target="_top">following
                         example</a> shows a complete servant implementation, and the <span class="command"><strong><a class="command" href="#asio_scheduler">ASIO section</a></strong></span> will show how an ASIO
                     pool can steal.</p><p>The threadpool schedulers we saw so far are not stealing from other pools. The
                         single-queue schedulers are not stealing, and the multiqueue schedulers
@@ -1113,8 +1113,8 @@ auto scheduler = boost::asynchronous::create_shared_scheduler_proxy(
    // this is simply to simulate a main() doing nothing but waiting for a termination request
    boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
 }
-                </pre><p> As usual, <a class="link" href="examples/example_asio_http_client.cpp" target="_top">here the
-                        complete, ready-to-use example</a> and the implementation of the <a class="link" href="examples/asio/asio_http_async_client.hpp" target="_top">Boost.Asio HTTP
+                </pre><p> As usual, <a class="link" href="libs/asynchronous/doc/examples/example_asio_http_client.cpp" target="_top">here the
+                        complete, ready-to-use example</a> and the implementation of the <a class="link" href="libs/asynchronous/doc/examples/asio/asio_http_async_client.hpp" target="_top">Boost.Asio HTTP
                         client</a>. </p></div><div class="sect1" title="Timers"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e1224"></a>Timers</h2></div></div></div><p>Very often, an Active Object servant acting as an asynchronous dispatcher will
                     post tasks which have to be done until a certain point in the future, or which
                     will start only at a later point. State machines also regularly make use of a
@@ -1138,7 +1138,7 @@ auto scheduler = boost::asynchronous::create_shared_scheduler_proxy(
             );                  </pre><p>Canceling or recreating the timer means destroying (and possibly
                         recreating) the timer object:</p><pre class="programlisting"> m_timer =  boost::asynchronous::asio_deadline_timer_proxy(get_worker(),boost::posix_time::milliseconds(1000));                                   
                     </pre><p>Alternatively, asio_deadline_timer_proxy offers a reset(duration) member,
-                        which is more efficient than recreating a proxy. The <a class="link" href="examples/example_asio_deadline_timer.cpp" target="_top">following example
+                        which is more efficient than recreating a proxy. The <a class="link" href="libs/asynchronous/doc/examples/example_asio_deadline_timer.cpp" target="_top">following example
                         </a> displays a servant using an asio scheduler as a thread pool and
                         creating there its timer object. Note how the timer is created using the
                         worker scheduler of its owner.</p></div></div><div class="sect1" title="Continuation tasks"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e1273"></a><span class="command"><strong><a name="callback_continuations"></a></strong></span>Continuation tasks</h2></div></div></div><p>A common limitation of threadpools is support for recursive tasks: tasks start
@@ -1246,7 +1246,7 @@ struct fib_task : public <span class="bold"><strong>boost::asynchronous::continu
                             <code class="code">expected&lt;long&gt;</code>, or worse if one expects an
                             <code class="code">expected&lt;void&gt;</code>, the callback would be called to
                         early.</p><p>As usual, calling get() on the expected is non-blocking, one gets either the
-                        result or an exception if thrown by a task.</p><p>Please have a look at the <a class="link" href="examples/example_fibonacci.cpp" target="_top">complete example</a>.</p></div><div class="sect2" title="Logging"><div class="titlepage"><div><div><h3 class="title"><a name="d0e1372"></a>Logging</h3></div></div></div><p>What about logging? We don't want to give up this feature of course and
+                        result or an exception if thrown by a task.</p><p>Please have a look at the <a class="link" href="libs/asynchronous/doc/examples/example_fibonacci.cpp" target="_top">complete example</a>.</p></div><div class="sect2" title="Logging"><div class="titlepage"><div><div><h3 class="title"><a name="d0e1372"></a>Logging</h3></div></div></div><p>What about logging? We don't want to give up this feature of course and
                         would like to know how long all these fib_task took to complete. This is
                         done through minor changes. As always we need a job:</p><pre class="programlisting">typedef boost::asynchronous::any_loggable&lt;std::chrono::high_resolution_clock&gt; servant_job;                                                 </pre><p> We give the logged name of the task in the constructor of fib_task, for
                         example fib_task_xxx:</p><pre class="programlisting">fib_task(long n,long cutoff)
@@ -1271,7 +1271,7 @@ struct fib_task : public <span class="bold"><strong>boost::asynchronous::continu
               [this](boost::asynchronous::expected&lt;long&gt; res){...},// callback functor.
               <span class="bold"><strong>"calc_fibonacci"</strong></span>
         );                             
-                </pre><p> The previous example has been <a class="link" href="examples/example_fibonacci_log.cpp" target="_top">rewritten with logs and a
+                </pre><p> The previous example has been <a class="link" href="libs/asynchronous/doc/examples/example_fibonacci_log.cpp" target="_top">rewritten with logs and a
                         display of all tasks</a> (beware, with higher fibonacci numbers, this can
                         become a long list).</p><p><span class="underline">Limitation</span>: in the current
                         implementation, tasks are logged, but the continuation callback is not. If it
@@ -1457,7 +1457,7 @@ struct main_task : public boost::asynchronous::continuation_task&lt;long&gt;
                     // future results of recursive tasks
                     <span class="bold"><strong>std::move(fu1),std::move(fu2),std::move(fu3)</strong></span>);
     }
-    };                                               </pre><p>Please have a look at <a class="link" href="examples/example_continuation_algo.cpp" target="_top">the complete
+    };                                               </pre><p>Please have a look at <a class="link" href="libs/asynchronous/doc/examples/example_continuation_algo.cpp" target="_top">the complete
                     example</a></p><p>Our tasks starts by posting 3 instances of sub_task, each time getting a
                     future. We then call <span class="bold"><strong>create_continuation(_job)</strong></span>,
                     passing it the futures. When all futures are ready (have a value or an
@@ -1518,7 +1518,7 @@ struct main_task : public boost::asynchronous::continuation_task&lt;long&gt;
                     <span class="bold"><strong>std::move(fus)</strong></span>);
     }
     };                                            </pre><p>The drawback is that in this case, all futures must be of the same type.
-                    Please have a look at <a class="link" href="examples/example_continuation_algo2.cpp" target="_top">the complete example</a></p></div><div class="sect1" title="Distributing work among machines"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e1640"></a><span class="command"><strong><a name="distributing"></a></strong></span>Distributing work among machines</h2></div></div></div><p>At the time of this writing, a core i7-3930K with 6 cores and 3.2 GHz will
+                    Please have a look at <a class="link" href="libs/asynchronous/doc/examples/example_continuation_algo2.cpp" target="_top">the complete example</a></p></div><div class="sect1" title="Distributing work among machines"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e1640"></a><span class="command"><strong><a name="distributing"></a></strong></span>Distributing work among machines</h2></div></div></div><p>At the time of this writing, a core i7-3930K with 6 cores and 3.2 GHz will
                     cost $560, so say $100 per core. Not a bad deal, so you buy it. Unfortunately,
                     some time later you realize you need more power. Ok, there is no i7 with more
                     cores and an Extreme Edition will be quite expensive for only a little more
@@ -1531,7 +1531,7 @@ struct main_task : public boost::asynchronous::continuation_task&lt;long&gt;
                     instead for clients to connect and steal some work. The client execute the work
                     on behalf of the <code class="code">tcp_server_scheduler</code> and sends it back the
                     results. </p><p>For this to work, there is however a condition: jobs must be (boost)
-                    serializable to be transferred to the client. So does the returned value.</p><p>Let's start with a <a class="link" href="examples/example_tcp_server.cpp" target="_top">simplest
+                    serializable to be transferred to the client. So does the returned value.</p><p>Let's start with a <a class="link" href="libs/asynchronous/doc/examples/example_tcp_server.cpp" target="_top">simplest
                         example</a>:</p><pre class="programlisting">// notice how the worker pool has a different job type
 struct Servant : boost::asynchronous::trackable_servant&lt;boost::asynchronous::any_callable,<span class="bold"><strong>boost::asynchronous::any_serializable</strong></span>&gt;
 {
@@ -1745,7 +1745,7 @@ struct fib_task : public boost::asynchronous::continuation_task&lt;long&gt;
                         its own name in the constructor, and it needs serialization members. That's
                         it, we're ready to distribute!</p><p>As we previously said, we will reuse our previous TCP example, using
                             <code class="code">serializable_fib_task</code> as the main posted task. This gives
-                        us <a class="link" href="examples/example_tcp_server_fib.cpp" target="_top">this example</a>.</p><p>But wait, we promised that our server would itself do some calculation
+                        us <a class="link" href="libs/asynchronous/doc/examples/example_tcp_server_fib.cpp" target="_top">this example</a>.</p><p>But wait, we promised that our server would itself do some calculation
                         work, and we use as worker pool only a <code class="code">tcp_server_scheduler</code>.
                         Right, let's do it now, throwing in a few more goodies. We need a worker
                         pool, with as many threads as we are willing to offer:</p><pre class="programlisting">// we need a pool where the tasks execute
@@ -1829,7 +1829,7 @@ auto scheduler = boost::asynchronous::create_shared_scheduler_proxy(
                         will continue until the composite is destroyed, or the work is done. For the
                         sake of the example, we do not give the composite as the Servant's worker
                         pool but keep it alive until the end of calculation. Please have a look at
-                        the <a class="link" href="examples/example_tcp_server_fib2.cpp" target="_top">complete example</a>.</p><p>In this example, we start taking care of homogenous work distribution by
+                        the <a class="link" href="libs/asynchronous/doc/examples/example_tcp_server_fib2.cpp" target="_top">complete example</a>.</p><p>In this example, we start taking care of homogenous work distribution by
                         packing a client and a server in the same application. But we need a bit
                         more: our last client would steal work so fast, every 10ms that it would
                         starve the server or other potential client applications, so we're going to
@@ -1892,7 +1892,7 @@ auto scheduler = boost::asynchronous::create_shared_scheduler_proxy(
                         but g++ (up to 4.7 at least) is uncooperative and requires an extra level of
                         indirection to get the desired client proxy. Otherwise, there is no
                         change.</p><p>Notice that our standard lockfree queue offers no size() so we use a less
-                        efficient guarded_deque.</p><p>You will find in the <a class="link" href="examples/simple_tcp_client.cpp" target="_top">complete example</a> a few other tasks which we will explain
+                        efficient guarded_deque.</p><p>You will find in the <a class="link" href="libs/asynchronous/doc/examples/simple_tcp_client.cpp" target="_top">complete example</a> a few other tasks which we will explain
                         shortly.</p><p>Let's stop a minute to think about what we just did. We built, with little
                         code, a complete framework for distributing tasks homogenously among
                         machines, by reusing standard component offered by the library: threadpools,
@@ -1907,7 +1907,7 @@ auto scheduler = boost::asynchronous::create_shared_scheduler_proxy(
                         to a server. What we want is a client/server combo application  where the
                         client steals and executes jobs and a server component of the same
                         application which steals jobs from the client on behalf of other clients.
-                        What we want is to achieve something like this:</p><p><span class="inlinemediaobject"><img src="pics/TCPHierarchical.jpg"></span></p><p>We have our server application, as seen until now, called interestingly
+                        What we want is to achieve something like this:</p><p><span class="inlinemediaobject"><img src="libs/asynchronous/doc/pics/TCPHierarchical.jpg"></span></p><p>We have our server application, as seen until now, called interestingly
                         ServerApplication on a machine called MainJobServer. This machine executes
                         work and offers at the same time a steal-from capability. We also have a
                         simple client called ClientApplication running on ClientMachine1, which
@@ -1986,15 +1986,15 @@ auto scheduler = boost::asynchronous::create_shared_scheduler_proxy(
  return 0;
  } //end main</pre><p>And we're done! The client part will steal jobs and execute them, while the
                         server part, bound to the client pool, will steal on sub-client-demand.
-                        Please have a look at the <a class="link" href="examples/tcp_client_server.cpp" target="_top">
+                        Please have a look at the <a class="link" href="libs/asynchronous/doc/examples/tcp_client_server.cpp" target="_top">
                             complete code</a>.</p></div></div><div class="sect1" title="Picking your archive"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e1998"></a>Picking your archive</h2></div></div></div><p>By default, Asynchronous uses a Boost Text archive (text_oarchive,
                     text_iarchive), which is simple and efficient enough for our Fibonacci example,
                     but inefficient for tasks holding more data.</p><p>Asynchronous supports any archive task, requires however a different job type
                     for this. At the moment, we can use a
                         <code class="code">portable_binary_oarchive</code>/<code class="code">portable_binary_iarchive</code>
                     by selecting <code class="code">any_bin_serializable</code> as job. If Boost supports more
-                    archive types, support is easy to add.</p><p>The previous Fibonacci server example has been <a class="link" href="examples/example_tcp_server_fib2_bin.cpp" target="_top">rewritten</a> to use this
-                    capability. The <a class="link" href="examples/simple_tcp_client_bin_archive.cpp" target="_top">client</a> has also been rewritten using this new job type.</p></div><div class="sect1" title="Parallel Algorithms (Christophe Henry / Tobias Holl)"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e2022"></a><span class="command"><strong><a name="parallel_algos"></a></strong></span>Parallel Algorithms (Christophe Henry / Tobias Holl)</h2></div></div></div><p>Asynchronous supports out of the box quite some asynchronous parallel
+                    archive types, support is easy to add.</p><p>The previous Fibonacci server example has been <a class="link" href="libs/asynchronous/doc/examples/example_tcp_server_fib2_bin.cpp" target="_top">rewritten</a> to use this
+                    capability. The <a class="link" href="libs/asynchronous/doc/examples/simple_tcp_client_bin_archive.cpp" target="_top">client</a> has also been rewritten using this new job type.</p></div><div class="sect1" title="Parallel Algorithms (Christophe Henry / Tobias Holl)"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e2022"></a><span class="command"><strong><a name="parallel_algos"></a></strong></span>Parallel Algorithms (Christophe Henry / Tobias Holl)</h2></div></div></div><p>Asynchronous supports out of the box quite some asynchronous parallel
                     algorithms, as well as interesting combination usages. These algorithms are
                     callback-continuation-based. Some of these algorithms also support distributed
                     calculations as long as the user-provided functors are (meaning they must be
@@ -2065,7 +2065,7 @@ std::tuple&lt;std::size_t,std::vector&lt;std::size_t&gt;&gt; find_best_cutoff(Sc
                                     long.</p></li><li class="listitem"><p>retries: how many times the same cutoff value will be used.
                                     Using retries will give us a better mean vakue for a given
                                     cutoff.</p></li><li class="listitem"><p>task_name: the name displayed in the scheduler
-                                    diagnostics</p></li><li class="listitem"><p>prio: task priority </p></li></ul></div><p>Please have a look at <a class="link" href="examples/example_cutoff_sort.cpp" target="_top">this example finding the best cutoff for a parallel_sort</a>.</p></div><div class="sect2" title="parallel_for"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3039"></a><span class="command"><strong><a name="parallel_for"></a></strong></span>parallel_for</h3></div></div></div><p>Applies a functor to every element of the range [beg,end) .</p><pre class="programlisting">template &lt;class Iterator, class Func, class Job=BOOST_ASYNCHRONOUS_DEFAULT_JOB&gt;
+                                    diagnostics</p></li><li class="listitem"><p>prio: task priority </p></li></ul></div><p>Please have a look at <a class="link" href="libs/asynchronous/doc/examples/example_cutoff_sort.cpp" target="_top">this example finding the best cutoff for a parallel_sort</a>.</p></div><div class="sect2" title="parallel_for"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3039"></a><span class="command"><strong><a name="parallel_for"></a></strong></span>parallel_for</h3></div></div></div><p>Applies a functor to every element of the range [beg,end) .</p><pre class="programlisting">template &lt;class Iterator, class Func, class Job=BOOST_ASYNCHRONOUS_DEFAULT_JOB&gt;
 boost::asynchronous::detail::callback_continuation&lt;<span class="bold"><strong>void</strong></span>,Job&gt;
 parallel_for(Iterator beg, Iterator end,Func func,long cutoff,const std::string&amp; task_name="", std::size_t prio=0);</pre><p>The parallel_for version taking iterators requires that the iterators stay
                         valid until completion. It is the programmer's job to ensure this.</p><p>The third argument is the predicate applied on each element of the
@@ -2108,7 +2108,7 @@ std::future&lt;void&gt; fu = post_future(
                         data, given in the form of iterators. </p><p>The code will do following:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>start tasks in the current worker pool of max 1500 elements of
                                 the input data</p></li><li class="listitem"><p>add 2 to each element in parallel</p></li><li class="listitem"><p>The parallel_for will return a continuation</p></li><li class="listitem"><p>The callback lambda will be called when all tasks complete.
                                 The expected will be either set or contain an exception</p></li><li class="listitem"><p>If post_future is used, a future&lt;void&gt; will be
-                                returned.</p></li></ul></div><p>Please have a look at <a class="link" href="examples/example_parallel_for.cpp" target="_top">the complete example</a>.</p><p>The functor can either be called for every single element, or for a range
+                                returned.</p></li></ul></div><p>Please have a look at <a class="link" href="libs/asynchronous/doc/examples/example_parallel_for.cpp" target="_top">the complete example</a>.</p><p>The functor can either be called for every single element, or for a range
                         of elements:
                         </p><pre class="programlisting">std::future&lt;void&gt; fu = post_future(
                            [this](){
@@ -2220,7 +2220,7 @@ parallel_for(Range range,Func func,long cutoff,const std::string&amp; task_name=
                     std::cout &lt;&lt; "got exception: " &lt;&lt; e.what() &lt;&lt; std::endl;
                  }
               }// end of callback functor.
-);</pre><p>Please have a look at the <a class="link" href="examples/example_parallel_for_tcp.cpp" target="_top">complete server example</a>.</p></div><div class="sect2" title="parallel_for_each"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3228"></a><span class="command"><strong><a name="parallel_for_each"></a></strong></span>parallel_for_each</h3></div></div></div><p>Applies a functor to every element of the range [beg,end). This functor
+);</pre><p>Please have a look at the <a class="link" href="libs/asynchronous/doc/examples/example_parallel_for_tcp.cpp" target="_top">complete server example</a>.</p></div><div class="sect2" title="parallel_for_each"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3228"></a><span class="command"><strong><a name="parallel_for_each"></a></strong></span>parallel_for_each</h3></div></div></div><p>Applies a functor to every element of the range [beg,end). This functor
                         can save data. It is merged at different steps with other instances of this
                         functor. The algorithm returns the last merged instance.</p><pre class="programlisting">template &lt;class Iterator, class Func, class Job=BOOST_ASYNCHRONOUS_DEFAULT_JOB&gt;
 boost::asynchronous::detail::callback_continuation&lt;<span class="bold"><strong>Func</strong></span>,Job&gt;
@@ -2833,7 +2833,7 @@ post_callback(
     },
     ](<span class="bold"><strong>boost::asynchronous::expected&lt;int&gt;</strong></span> ){} // callback gets an int
 );</pre><p>
-                    </p><p>We also have a <a class="link" href="examples/example_parallel_reduce_tcp.cpp" target="_top">distributed version</a> as an example, which strictly looks like the parallel_for version.</p></div><div class="sect2" title="parallel_inner_product"><div class="titlepage"><div><div><h3 class="title"><a name="d0e5057"></a><span class="command"><strong><a name="parallel_inner_product"></a></strong></span>parallel_inner_product</h3></div></div></div><p><span class="underline">Description</span>: Computes inner product
+                    </p><p>We also have a <a class="link" href="libs/asynchronous/doc/examples/example_parallel_reduce_tcp.cpp" target="_top">distributed version</a> as an example, which strictly looks like the parallel_for version.</p></div><div class="sect2" title="parallel_inner_product"><div class="titlepage"><div><div><h3 class="title"><a name="d0e5057"></a><span class="command"><strong><a name="parallel_inner_product"></a></strong></span>parallel_inner_product</h3></div></div></div><p><span class="underline">Description</span>: Computes inner product
                         (i.e. sum of products) of the range [begin1, end1) and another range
                         beginning at begin2.It uses op and red for these tasks respectively. </p><pre class="programlisting">template &lt;class Iterator1, class Iterator2, class BinaryOperation, class Reduce, class Value, class Enable, class T, class Job=BOOST_ASYNCHRONOUS_DEFAULT_JOB&gt;
 boost::asynchronous::detail::callback_continuation&lt;<span class="bold"><strong>T</strong></span>,Job&gt;
@@ -2926,7 +2926,7 @@ boost::asynchronous::detail::<span class="bold"><strong>callback_continuation</s
                 }// callback functor.
 );</pre><p>Notice the use of <span class="bold"><strong>to_continuation_task</strong></span> to
                         convert the lambdas in continuations.</p><p>As always, the callback lambda will be called when all tasks complete and
-                        the futures are non-blocking.</p><p>Please have a look at the <a class="link" href="examples/example_parallel_invoke.cpp" target="_top">complete
+                        the futures are non-blocking.</p><p>Please have a look at the <a class="link" href="libs/asynchronous/doc/examples/example_parallel_invoke.cpp" target="_top">complete
                             example</a>.</p></div><div class="sect2" title="if_then_else"><div class="titlepage"><div><div><h3 class="title"><a name="d0e5313"></a><span class="command"><strong><a name="if_then_else"></a></strong></span>if_then_else</h3></div></div></div><p><span class="underline">Description</span>: Executes a then or an
                         else clause passed as continuations depending on an if clause. If clause is
                         a functor returning a bool. Then and Else clauses are functors returning a
@@ -3103,7 +3103,7 @@ post_callback(
     },
     ](<span class="bold"><strong>boost::asynchronous::expected&lt;std::vector&lt;int&gt;&gt;</strong></span> ){}
 );</pre><p>
-                    </p><p>Please have a look at the <a class="link" href="examples/example_parallel_find_all.cpp" target="_top">complete example</a>.</p></div><div class="sect2" title="parallel_extremum"><div class="titlepage"><div><div><h3 class="title"><a name="d0e5637"></a><span class="command"><strong><a name="parallel_extremum"></a></strong></span>parallel_extremum</h3></div></div></div><p>parallel_extremum finds an extremum (min/max) of a range given by a
+                    </p><p>Please have a look at the <a class="link" href="libs/asynchronous/doc/examples/example_parallel_find_all.cpp" target="_top">complete example</a>.</p></div><div class="sect2" title="parallel_extremum"><div class="titlepage"><div><div><h3 class="title"><a name="d0e5637"></a><span class="command"><strong><a name="parallel_extremum"></a></strong></span>parallel_extremum</h3></div></div></div><p>parallel_extremum finds an extremum (min/max) of a range given by a
                         predicate.</p><p>
                         </p><pre class="programlisting">template &lt;class Iterator, class Func,class Job=BOOST_ASYNCHRONOUS_DEFAULT_JOB&gt;
 boost::asynchronous::detail::callback_continuation&lt;typename std::iterator_traits&lt;Iterator&gt;::value_type,Job&gt;
@@ -3122,7 +3122,7 @@ decltype(boost::asynchronous::parallel_reduce(...))
                                     searched elements. The signature of the function should be
                                     equivalent to the following: bool func(const Type &amp;a, const
                                     Type &amp;b);</p></li><li class="listitem"><p>cutoff: the maximum size of a sequential chunk</p></li><li class="listitem"><p>task_name: the name displayed in the scheduler
-                                    diagnostics</p></li><li class="listitem"><p>prio: task priority </p></li></ul></div><p>Please have a look at the <a class="link" href="examples/example_parallel_extremum.cpp" target="_top">complete
+                                    diagnostics</p></li><li class="listitem"><p>prio: task priority </p></li></ul></div><p>Please have a look at the <a class="link" href="libs/asynchronous/doc/examples/example_parallel_extremum.cpp" target="_top">complete
                             example</a>.</p></div><div class="sect2" title="parallel_count / parallel_count_if"><div class="titlepage"><div><div><h3 class="title"><a name="d0e5687"></a><span class="command"><strong><a name="parallel_count"></a></strong></span>parallel_count /
                         parallel_count_if</h3></div></div></div><p>parallel_count counts the elements of a range satisfying a
                         predicate.</p><pre class="programlisting">template &lt;class Iterator, class T,class Job=BOOST_ASYNCHRONOUS_DEFAULT_JOB&gt;
@@ -3148,7 +3148,7 @@ boost::asynchronous::detail::callback_continuation&lt;<span class="bold"><strong
                         completion. It is the programmer's job to ensure this.</p><p><span class="underline">Parameters</span>: </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>beg, end: the range of elements</p><p>Or range: a moved range.</p><p>Or a continuation, coming from another algorithm.</p></li><li class="listitem"><p>T value: the value to search for</p></li><li class="listitem"><p>func: unary predicate function which returns true for searched
                                     elements. The signature of the function should be equivalent to
                                     the following: bool func(const Type &amp;a);</p></li><li class="listitem"><p>cutoff: the maximum size of a sequential chunk</p></li><li class="listitem"><p>task_name: the name displayed in the scheduler
-                                    diagnostics</p></li><li class="listitem"><p>prio: task priority </p></li></ul></div><p>Please have a look at the <a class="link" href="examples/example_parallel_count.cpp" target="_top">complete
+                                    diagnostics</p></li><li class="listitem"><p>prio: task priority </p></li></ul></div><p>Please have a look at the <a class="link" href="libs/asynchronous/doc/examples/example_parallel_count.cpp" target="_top">complete
                         example</a>.</p></div><div class="sect2" title="parallel_sort / parallel_stable_sort / parallel_spreadsort / parallel_sort_inplace / parallel_stable_sort_inplace / parallel_spreadsort_inplace"><div class="titlepage"><div><div><h3 class="title"><a name="d0e5761"></a><span class="command"><strong><a name="parallel_sort"></a></strong></span>parallel_sort / parallel_stable_sort /
                         parallel_spreadsort / parallel_sort_inplace / parallel_stable_sort_inplace /
                         parallel_spreadsort_inplace</h3></div></div></div><p>parallel_sort / parallel_stable_sort implement a parallel mergesort.
@@ -3194,7 +3194,7 @@ boost::asynchronous::detail::callback_continuation&lt;<span class="bold"><strong
                                     searched elements. The signature of the function should be
                                     equivalent to the following: bool func(const Type &amp;a, const
                                     Type &amp;b);</p></li><li class="listitem"><p>cutoff: the maximum size of a sequential chunk</p></li><li class="listitem"><p>task_name: the name displayed in the scheduler
-                                    diagnostics</p></li><li class="listitem"><p>prio: task priority </p></li></ul></div><p>Please have a look at the <a class="link" href="examples/example_parallel_count.cpp" target="_top">complete
+                                    diagnostics</p></li><li class="listitem"><p>prio: task priority </p></li></ul></div><p>Please have a look at the <a class="link" href="libs/asynchronous/doc/examples/example_parallel_count.cpp" target="_top">complete
                         example</a>.</p></div><div class="sect2" title="parallel_partial_sort"><div class="titlepage"><div><div><h3 class="title"><a name="d0e5864"></a><span class="command"><strong><a name="parallel_partial_sort"></a></strong></span>parallel_partial_sort</h3></div></div></div><p>Rearranges elements such that the range [begin, middle) contains the
                         sorted middle - begin smallest elements in the range [begin, end). The order
                         of equal elements is not guaranteed to be preserved. The order of the
@@ -3269,7 +3269,7 @@ boost::asynchronous::any_shared_scheduler_proxy&lt;&gt; pool =
                                 pool.</p></li><li class="listitem"><p>long get_cutoff() const: returns the cutoff as given in
                                 constructor.</p></li><li class="listitem"><p>std::string get_name() const: the logged name, as given in the
                                 constructor.</p></li><li class="listitem"><p>std::size_t get_prio()const: the priority, as given in the
-                                constructor.</p></li></ul></div><p><a class="link" href="examples/example_vector.cpp" target="_top">This example</a> displays
+                                constructor.</p></li></ul></div><p><a class="link" href="libs/asynchronous/doc/examples/example_vector.cpp" target="_top">This example</a> displays
                     some basic usage of vector.</p><div class="table"><a name="d0e6032"></a><p class="title"><b>Table&nbsp;3.10.&nbsp;#include
                         &lt;boost/asynchronous/container/vector.hpp&gt;</b></p><div class="table-contents"><table summary="#include&#xA;                        <boost/asynchronous/container/vector.hpp&gt;" border="1"><colgroup><col><col><col></colgroup><thead><tr><th>Public Member functions as in std::vector</th><th>Description</th><th>Parallel if threadpool?</th></tr></thead><tbody><tr><td>(constructor)</td><td>constructs the vector</td><td>Yes</td></tr><tr><td>(destructor)</td><td>destructs the vector</td><td>Yes</td></tr><tr><td>operator=</td><td>assigns values to the container</td><td>Yes</td></tr><tr><td>assign</td><td>assigns values to the container </td><td>Yes</td></tr><tr><td>get_allocator</td><td>returns the associated allocator </td><td>No</td></tr><tr><td>at</td><td>access specified element with bounds checking </td><td>No</td></tr><tr><td>operator[]</td><td>access specified element </td><td>No</td></tr><tr><td>front</td><td>access the first element </td><td>No</td></tr><tr><td>back</td><td>access the last element </td><td>No</td></tr><tr><td>data</td><td>direct access to the underlying array </td><td>No</td></tr><tr><td>begin / cbegin </td><td>returns an iterator to the beginning</td><td>No</td></tr><tr><td>end / cend </td><td>returns an iterator to the end </td><td>No</td></tr><tr><td>rbegin / crbegin </td><td>returns a reverse iterator to the beginning </td><td>No</td></tr><tr><td>rend / crend </td><td>returns a reverse iterator to the end </td><td>No</td></tr><tr><td>empty</td><td>checks whether the container is empty </td><td>No</td></tr><tr><td>size</td><td>returns the number of elements </td><td>No</td></tr><tr><td>max_size</td><td>returns the maximum possible number of elements</td><td>No</td></tr><tr><td>reserve</td><td>reserves storage </td><td>Yes</td></tr><tr><td>capacity</td><td>returns the number of elements that can be held in currently
                                     allocated storage </td><td>Yes</td></tr><tr><td>shrink_to_fit </td><td>reduces memory usage by freeing unused memory</td><td>Yes</td></tr><tr><td>clear</td><td>clears the contents </td><td>Yes</td></tr><tr><td>insert</td><td>inserts elements </td><td>Yes</td></tr><tr><td>emplace</td><td>constructs element in-place </td><td>Yes</td></tr><tr><td>erase</td><td>erases elements</td><td>Yes</td></tr><tr><td>push_back</td><td>adds an element to the end </td><td>Yes</td></tr><tr><td>emplace_back</td><td>constructs an element in-place at the end </td><td>Yes</td></tr><tr><td>pop_back</td><td>removes the last element</td><td>No</td></tr><tr><td>resize</td><td>changes the number of elements stored</td><td>Yes</td></tr><tr><td>swap</td><td>swaps the contents </td><td>No</td></tr><tr><td>operator==</td><td>lexicographically compares the values in the vector </td><td>Yes</td></tr><tr><td>operator!=</td><td>lexicographically compares the values in the vector </td><td>Yes</td></tr><tr><td>operator&lt; </td><td>lexicographically compares the values in the vector </td><td>Yes</td></tr><tr><td>operator&lt;= </td><td>lexicographically compares the values in the vector </td><td>Yes</td></tr><tr><td>operator&gt; </td><td>lexicographically compares the values in the vector </td><td>Yes</td></tr><tr><td>operator&gt;=</td><td>lexicographically compares the values in the vector </td><td>Yes</td></tr></tbody></table></div></div><br class="table-break"><p>All these members have the same signature as std::vector. Only some
@@ -3360,7 +3360,7 @@ explicit vector( boost::asynchronous::any_shared_scheduler_proxy&lt;Job&gt; sche
                                 we mean that it should not use any data from the caller thread to
                                 avoid races.</p></li></ul></div><p>All this makes from the then functor a fire-and-forget one and prevents
                     reacting on changes happening between the first functor and the then
-                    functor.</p><p>A superior solution exists using Asynchronous schedulers. <a class="link" href="examples/example_callback.cpp" target="_top">In this example</a>, we
+                    functor.</p><p>A superior solution exists using Asynchronous schedulers. <a class="link" href="libs/asynchronous/doc/examples/example_callback.cpp" target="_top">In this example</a>, we
                     define a Manager object, which lives in his single thread scheduler. This
                     Manager, a simplified state machine, starts a task when asked (calling start()
                     on its proxy). Upon completing the first task, the Manager chooses to start or
@@ -3384,7 +3384,7 @@ explicit vector( boost::asynchronous::any_shared_scheduler_proxy&lt;Job&gt; sche
                                 completely reusable and its thread limits are well defined.</p></li><li class="listitem"><p>We have in this example only one servant and its proxy. It would
                                 be easily possible to define any number of pair of those. In this
                                 case, the last proxy destroyed would shut down the thread
-                                world.</p></li></ul></div><p><a class="link" href="examples/example_callback_msm.cpp" target="_top">We can also write the same example using a real Boost.MSM state machine</a></p></div><div class="sect1" title="A layered application"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e6484"></a>A layered application</h2></div></div></div><p>A common design pattern for an application is organizing it into layers. We
+                                world.</p></li></ul></div><p><a class="link" href="libs/asynchronous/doc/examples/example_callback_msm.cpp" target="_top">We can also write the same example using a real Boost.MSM state machine</a></p></div><div class="sect1" title="A layered application"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e6484"></a>A layered application</h2></div></div></div><p>A common design pattern for an application is organizing it into layers. We
                     suppose we are having three layers:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>TopLevel: what the user of the application is seeing</p></li><li class="listitem"><p>MiddleLevel: some internal business logic</p></li><li class="listitem"><p>LowLevel: communication layer</p></li></ul></div><p>This is a common design in lots of books. A top level layer receives user
                     commands , checks for their syntax, then delegates to a middle layer, composed
                     of business logic, checking whether the application is in a state to execute the
@@ -3397,12 +3397,12 @@ explicit vector( boost::asynchronous::any_shared_scheduler_proxy&lt;Job&gt; sche
                                 be executed in the lower layer thread(s)</p></li><li class="listitem"><p>Lifecycles. Usually, each layer has responsibility of keeping his
                                 lower layers alive. But how to handle destruction of higher-levels?
                                 Callbacks might already be under way and they will soon meet a
-                                destroyed mutex?</p></li></ul></div><p><span class="inlinemediaobject"><img src="pics/layers.jpg"></span></p><p>Asychronous provides a solution to these problems:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>Each layer is living in its own thread world (or sharing
+                                destroyed mutex?</p></li></ul></div><p><span class="inlinemediaobject"><img src="libs/asynchronous/doc/pics/layers.jpg"></span></p><p>Asychronous provides a solution to these problems:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>Each layer is living in its own thread world (or sharing
                                 one).</p></li><li class="listitem"><p>Asynchronous guarantees that each layer will be destroyed in turn:
                                 LowLevel - MiddleLevel - TopLevel.</p></li><li class="listitem"><p>Asynchronous provides proxies to serialize outside calls into a
                                 servant thread world.</p></li><li class="listitem"><p>Asynchronous provides safe callbacks: each servant can use
                                 make_safe_calback, which guarantees execution in the servant thread
-                                if and only if the servant is still alive.</p></li></ul></div><p><a class="link" href="examples/example_layers.cpp" target="_top">In this simplified
+                                if and only if the servant is still alive.</p></li></ul></div><p><a class="link" href="libs/asynchronous/doc/examples/example_layers.cpp" target="_top">In this simplified
                         example</a>, each layer has its own thread world. Using the proxies
                     provided by the library, each servant is protected from races through calls from
                     their upper layer or the outside world (main). Servants are also protected from
@@ -3437,7 +3437,7 @@ explicit vector( boost::asynchronous::any_shared_scheduler_proxy&lt;Job&gt; sche
                     will update the status of all buttons. So we now have an asynchronous, non
                     blocking user interface delegating handling the hardware to an asynchronous, non
                     blocking logic layer:</p><p>
-                    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>PlayerGui(<a class="link" href="examples/msmplayer/playergui.h" target="_top">.h</a><a class="link" href="examples/msmplayer/playergui.cpp" target="_top">.cpp</a>): a QWidget providing a simple user interface with
+                    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>PlayerGui(<a class="link" href="libs/asynchronous/doc/examples/msmplayer/playergui.h" target="_top">.h</a><a class="link" href="libs/asynchronous/doc/examples/msmplayer/playergui.cpp" target="_top">.cpp</a>): a QWidget providing a simple user interface with
                                 buttons like the real hardware would. It inherits qt_servant to get
                                 access to safe callbacks. It provides SafeDisplay, an implementation
                                 of IDisplay, interface which the real CD player will also implement,
@@ -3445,10 +3445,10 @@ explicit vector( boost::asynchronous::any_shared_scheduler_proxy&lt;Job&gt; sche
                                 the real hardware will implement. The "Safe" part is that the
                                 callbacks being passed are resulting from make_safe_callback: they
                                 will be executed within the Qt thread, only if the QWidget is still
-                                alive.</p></li><li class="listitem"><p>PlayerLogic(<a class="link" href="examples/msmplayer/playerlogic.h" target="_top">.h</a><a class="link" href="examples/msmplayer/playerlogic.cpp" target="_top">.cpp</a>): the entry point to our logic layer: a
+                                alive.</p></li><li class="listitem"><p>PlayerLogic(<a class="link" href="libs/asynchronous/doc/examples/msmplayer/playerlogic.h" target="_top">.h</a><a class="link" href="libs/asynchronous/doc/examples/msmplayer/playerlogic.cpp" target="_top">.cpp</a>): the entry point to our logic layer: a
                                 trackable_servant, hiden behind a servant_proxy. In our example, it
-                                will delegate all logic work to the state machine.</p></li><li class="listitem"><p><a class="link" href="examples/msmplayer/playerlogic.cpp" target="_top">StateMachine</a>: a Boost.MSM state machine, implementing the whole CD
-                                player logic.</p></li><li class="listitem"><p><a class="link" href="examples/msmplayer/idisplay.h" target="_top">IDisplay</a>: the user interface provided by the real player.</p></li><li class="listitem"><p><a class="link" href="examples/msmplayer/ihardware.h" target="_top">IHardware</a>: the interface provided by the real hardware (buttons,
+                                will delegate all logic work to the state machine.</p></li><li class="listitem"><p><a class="link" href="libs/asynchronous/doc/examples/msmplayer/playerlogic.cpp" target="_top">StateMachine</a>: a Boost.MSM state machine, implementing the whole CD
+                                player logic.</p></li><li class="listitem"><p><a class="link" href="libs/asynchronous/doc/examples/msmplayer/idisplay.h" target="_top">IDisplay</a>: the user interface provided by the real player.</p></li><li class="listitem"><p><a class="link" href="libs/asynchronous/doc/examples/msmplayer/ihardware.h" target="_top">IHardware</a>: the interface provided by the real hardware (buttons,
                                 motors, sensor, etc).</p></li></ul></div><p>
                 </p><p>This example shows very important concepts of the Boost.MSM and Asynchronous
                     libraries in actions:</p><p>
@@ -3464,7 +3464,7 @@ explicit vector( boost::asynchronous::any_shared_scheduler_proxy&lt;Job&gt; sche
                                 This is no small feat when we consider that we are controlling a
                                 "real" hardware with huge response times compared to the speed of a
                                 CPU.</p></li></ul></div><p>                   
-                </p><p>Please have a closer look at the following implementation details:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p><a class="link" href="examples/msmplayer/playerlogic.h" target="_top">PlayerLogicProxy</a> has a future-free interface. Its members take a
+                </p><p>Please have a closer look at the following implementation details:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p><a class="link" href="libs/asynchronous/doc/examples/msmplayer/playerlogic.h" target="_top">PlayerLogicProxy</a> has a future-free interface. Its members take a
                                 callback. This is a sign there will be no blocking.</p></li><li class="listitem"><p>The state machine in PlayerLogic's state machine uses
                                 post_callback for long tasks. In the callback, the next event
                                 processing will start.</p></li><li class="listitem"><p>The UI (PlayerGui) is also non-blocking. We make use of callbacks
