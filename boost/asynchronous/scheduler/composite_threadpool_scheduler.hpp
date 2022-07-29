@@ -83,8 +83,7 @@ public:
         for (typename std::vector<subpool_type>::const_iterator it = m_subpools.begin(); it != m_subpools.end();++it)
         {
             auto one_queue_vec = (*it).get_queue_size();
-            res.push_back(std::accumulate(one_queue_vec.begin(),one_queue_vec.end(),0,
-                                          [](std::size_t rhs,std::size_t lhs){return rhs + lhs;}));
+            res.push_back(std::accumulate(one_queue_vec.begin(),one_queue_vec.end(),std::size_t(0)));
         }
         return res;
     }
@@ -94,7 +93,7 @@ public:
         for (typename std::vector<subpool_type>::const_iterator it = m_subpools.begin(); it != m_subpools.end();++it)
         {
             auto one_queue_vec = (*it).get_max_queue_size();
-            res.push_back(std::accumulate(one_queue_vec.begin(),one_queue_vec.end(),0,
+            res.push_back(std::accumulate(one_queue_vec.begin(),one_queue_vec.end(),std::size_t(0),
                                           [](std::size_t rhs,std::size_t lhs){return std::max(rhs,lhs);}));
         }
         return res;
@@ -412,8 +411,7 @@ private:
             for (typename std::vector<boost::asynchronous::any_shared_scheduler<job_type> >::const_iterator it = m_schedulers.begin(); it != m_schedulers.end();++it)
             {
                 auto one_queue_vec = (*it).get_queue_size();
-                res.push_back(std::accumulate(one_queue_vec.begin(),one_queue_vec.end(),0,
-                                              [](std::size_t rhs,std::size_t lhs){return rhs + lhs;}));
+                res.push_back(std::accumulate(one_queue_vec.begin(),one_queue_vec.end(),std::size_t(0)));
             }
             return res;
         }
@@ -424,7 +422,7 @@ private:
             for (typename std::vector<boost::asynchronous::any_shared_scheduler<job_type> >::const_iterator it = m_schedulers.begin(); it != m_schedulers.end();++it)
             {
                 auto one_queue_vec = (*it).get_max_queue_size();
-                res.push_back(std::accumulate(one_queue_vec.begin(),one_queue_vec.end(),0,
+                res.push_back(std::accumulate(one_queue_vec.begin(),one_queue_vec.end(),std::size_t(0),
                                               [](std::size_t rhs,std::size_t lhs){return std::max(rhs,lhs);}));
             }
             return res;
